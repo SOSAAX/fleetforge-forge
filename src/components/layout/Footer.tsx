@@ -1,5 +1,6 @@
 import { Link } from 'react-router-dom';
 import { Phone, Mail, MapPin, Clock } from 'lucide-react';
+import { Logo } from '@/components/ui/logo';
 
 export const Footer = () => {
   return (
@@ -9,9 +10,7 @@ export const Footer = () => {
           {/* Brand */}
           <div>
             <div className="flex items-center gap-2 mb-4">
-              <div className="w-10 h-10 rounded-lg bg-gradient-orange flex items-center justify-center">
-                <span className="text-primary-foreground font-bold text-lg">FF</span>
-              </div>
+              <Logo />
               <div>
                 <span className="font-bold text-lg text-foreground">FleetForge</span>
                 <span className="text-muted-foreground text-sm block -mt-1">Truck Solutions</span>
