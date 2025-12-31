@@ -3,6 +3,7 @@ import { Link, useLocation } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Menu, X, ShoppingCart, Phone } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import { Logo } from '@/components/ui/logo';
 import { useCart } from '@/contexts/CartContext';
 
 const navLinks = [
@@ -44,9 +45,7 @@ export const Header = () => {
         <nav className="flex items-center justify-between">
           {/* Logo */}
           <Link to="/" className="flex items-center gap-2 group">
-            <div className="w-10 h-10 rounded-lg bg-gradient-orange flex items-center justify-center transition-transform duration-300 group-hover:scale-105">
-              <span className="text-primary-foreground font-bold text-lg">FF</span>
-            </div>
+            <Logo className="transition-transform duration-300 group-hover:scale-105" />
             <div className="hidden sm:block">
               <span className="font-bold text-lg text-foreground">FleetForge</span>
               <span className="text-muted-foreground text-sm block -mt-1">Truck Solutions</span>
