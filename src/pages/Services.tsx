@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, type FormEvent } from 'react';
 import { Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import {
@@ -27,7 +27,8 @@ const serviceCategories = [
     icon: Wrench,
     title: 'Truck Repair & Maintenance',
     subtitle: 'Mobile diagnostics, repairs, and scheduled PM services',
-    description: 'Our certified technicians come to your location for on-site repairs, preventative maintenance, and diagnostics. No towing required.',
+    description:
+      'Our certified technicians come to your location for on-site repairs, preventative maintenance, and diagnostics. No towing required.',
     image: repairImage,
     link: '/contact',
     cta: 'Schedule Service',
@@ -48,8 +49,9 @@ const serviceCategories = [
     id: 'detailing',
     icon: Droplets,
     title: 'Truck Detailing',
-    subtitle: 'Professional cleaning to maintain your fleet\'s image',
-    description: 'Keep your trucks looking sharp with our comprehensive detailing services. We handle everything from basic washes to full restoration.',
+    subtitle: "Professional cleaning to maintain your fleet's image",
+    description:
+      'Keep your trucks looking sharp with our comprehensive detailing services. We handle everything from basic washes to full restoration.',
     image: detailingImage,
     link: '/contact',
     cta: 'Book Detailing',
@@ -69,7 +71,8 @@ const serviceCategories = [
     icon: Package,
     title: 'Parts & Supplies',
     subtitle: 'Quality parts sourced fast with VIN-based accuracy',
-    description: 'We source OEM and aftermarket parts for all major truck brands. Fast delivery, competitive pricing, and VIN-accurate matching.',
+    description:
+      'We source OEM and aftermarket parts for all major truck brands. Fast delivery, competitive pricing, and VIN-accurate matching.',
     image: partsImage,
     link: '/parts',
     cta: 'Shop Parts',
@@ -111,18 +114,22 @@ const ServiceCard = ({ service, index }: ServiceCardProps) => {
             className="w-full h-full object-cover transition-transform duration-500 hover:scale-105"
           />
           <div className="absolute inset-0 bg-gradient-to-t from-background/60 to-transparent" />
-          
+
           {/* Badge */}
           <div className="absolute top-4 left-4">
             <div className="flex items-center gap-2 px-3 py-1.5 bg-primary rounded-full">
               <service.icon className="w-4 h-4 text-primary-foreground" />
               <span className="text-sm font-semibold text-primary-foreground">
-                {service.id === 'repair' ? 'Most Popular' : service.id === 'parts' ? 'Shop Online' : 'Premium'}
+                {service.id === 'repair'
+                  ? 'Most Popular'
+                  : service.id === 'parts'
+                  ? 'Shop Online'
+                  : 'Premium'}
               </span>
             </div>
           </div>
         </div>
-        
+
         {/* Decorative glow */}
         <div className="absolute -bottom-4 -right-4 w-32 h-32 bg-primary/20 rounded-full blur-3xl pointer-events-none" />
       </div>
@@ -134,7 +141,9 @@ const ServiceCard = ({ service, index }: ServiceCardProps) => {
             <service.icon className="w-6 h-6 text-primary" />
           </div>
           <div>
-            <h2 className="text-2xl md:text-3xl font-bold text-foreground">{service.title}</h2>
+            <h2 className="text-2xl md:text-3xl font-bold text-foreground">
+              {service.title}
+            </h2>
             <p className="text-muted-foreground">{service.subtitle}</p>
           </div>
         </div>
@@ -164,23 +173,47 @@ const ServiceCard = ({ service, index }: ServiceCardProps) => {
   );
 };
 
+function encodeForm(formData: FormData) {
+  const params = new URLSearchParams();
+  for (const [key, value] of formData.entries()) {
+    // ignore files in urlencoded mode
+    if (typeof value === 'string') params.append(key, value);
+  }
+  return params.toString();
+}
+
 export default function Services() {
   const { toast } = useToast();
   const [isSubmitting, setIsSubmitting] = useState(false);
 
-  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+  const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setIsSubmitting(true);
-    
-    await new Promise(resolve => setTimeout(resolve, 1000));
-    
-    toast({
-      title: "Service Request Submitted",
-      description: "We'll get back to you within 30 minutes during business hours.",
-    });
-    
-    setIsSubmitting(false);
-    (e.target as HTMLFormElement).reset();
+
+    const form = e.currentTarget;
+    const formData = new FormData(form);
+
+    try {
+      await fetch('/', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+        body: encodeForm(formData),
+      });
+
+      toast({
+        title: 'Service Request Submitted',
+        description: "We'll get back to you within 30 minutes during business hours.",
+      });
+
+      form.reset();
+    } catch (err) {
+      toast({
+        title: 'Submission failed',
+        description: 'Please try again or call/text us at (571) 206-2249.',
+      });
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   return (
@@ -197,8 +230,7 @@ export default function Services() {
               Our Services
             </span>
             <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold text-foreground mb-6">
-              Professional Mobile{' '}
-              <span className="text-gradient-orange">Truck Service</span>
+              Professional Mobile <span className="text-gradient-orange">Truck Service</span>
             </h1>
             <p className="text-lg text-muted-foreground">
               From quick repairs to comprehensive maintenance programs, we bring expert service directly to your location. Three core services to keep your fleet running.
@@ -218,7 +250,8 @@ export default function Services() {
                 className="flex items-center gap-2 px-4 py-2 rounded-lg bg-secondary hover:bg-primary/10 hover:text-primary transition-all text-sm font-medium text-foreground"
               >
                 <cat.icon className="w-4 h-4" />
-                {cat.title.split(' ')[0]} {cat.title.includes('&') ? '& ' + cat.title.split('& ')[1].split(' ')[0] : ''}
+                {cat.title.split(' ')[0]}{' '}
+                {cat.title.includes('&') ? '& ' + cat.title.split('& ')[1].split(' ')[0] : ''}
               </a>
             ))}
           </div>
@@ -254,7 +287,21 @@ export default function Services() {
             className="max-w-2xl mx-auto"
           >
             <div className="card-elevated p-8">
-              <form onSubmit={handleSubmit} className="space-y-6">
+              <form
+                name="service-request"
+                method="POST"
+                data-netlify="true"
+                netlify-honeypot="bot-field"
+                onSubmit={handleSubmit}
+                className="space-y-6"
+              >
+                <input type="hidden" name="form-name" value="service-request" />
+                <p className="hidden">
+                  <label>
+                    Don’t fill this out: <input name="bot-field" />
+                  </label>
+                </p>
+
                 <div className="grid sm:grid-cols-2 gap-4">
                   <div className="space-y-2">
                     <Label htmlFor="name">Name *</Label>
@@ -289,12 +336,7 @@ export default function Services() {
 
                 <div className="space-y-2">
                   <Label htmlFor="notes">Additional Notes</Label>
-                  <Textarea
-                    id="notes"
-                    name="notes"
-                    rows={4}
-                    placeholder="Describe your issue or request in detail..."
-                  />
+                  <Textarea id="notes" name="notes" rows={4} placeholder="Describe your issue or request in detail..." />
                 </div>
 
                 <div className="bg-secondary/50 rounded-lg p-4">
@@ -323,9 +365,7 @@ export default function Services() {
             <h2 className="text-3xl md:text-4xl font-bold text-foreground mb-4">
               Need Service Now?
             </h2>
-            <p className="text-muted-foreground mb-8">
-              Call or text us directly for the fastest response.
-            </p>
+            <p className="text-muted-foreground mb-8">Call or text us directly for the fastest response.</p>
             <Button variant="hero" size="xl" asChild>
               <a href="tel:5712062249" className="flex items-center gap-2">
                 <Phone className="w-5 h-5" />
