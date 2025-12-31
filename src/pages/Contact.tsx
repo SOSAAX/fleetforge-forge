@@ -1,19 +1,10 @@
-import { useState } from 'react';
+import { useState, type FormEvent } from 'react';
 import { motion } from 'framer-motion';
-import {
-  Phone,
-  Mail,
-  Globe,
-  MapPin,
-  Clock,
-  Send,
-  CheckCircle2,
-} from 'lucide-react';
+import { Phone, Mail, Globe, MapPin, Clock, Send } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Label } from '@/components/ui/label';
-import { SectionHeader } from '@/components/ui/section-header';
 import { Layout } from '@/components/layout/Layout';
 import { useToast } from '@/hooks/use-toast';
 
@@ -33,43 +24,51 @@ const serviceAreas = [
 ];
 
 const contactInfo = [
-  {
-    icon: Phone,
-    label: 'Phone',
-    value: '(571) 206-2249',
-    href: 'tel:5712062249',
-  },
-  {
-    icon: Globe,
-    label: 'Website',
-    value: 'fleetforgetrucks.com',
-    href: 'https://fleetforgetrucks.com',
-  },
-  {
-    icon: Mail,
-    label: 'Email',
-    value: 'info@fleetforgetrucks.com',
-    href: 'mailto:info@fleetforgetrucks.com',
-  },
+  { icon: Phone, label: 'Phone', value: '(571) 206-2249', href: 'tel:5712062249' },
+  { icon: Globe, label: 'Website', value: 'fleetforgetrucks.com', href: 'https://fleetforgetrucks.com' },
+  { icon: Mail, label: 'Email', value: 'info@fleetforgetrucks.com', href: 'mailto:info@fleetforgetrucks.com' },
 ];
+
+function encodeForm(formData: FormData) {
+  const params = new URLSearchParams();
+  for (const [key, value] of formData.entries()) {
+    if (typeof value === 'string') params.append(key, value);
+  }
+  return params.toString();
+}
 
 export default function Contact() {
   const { toast } = useToast();
   const [isSubmitting, setIsSubmitting] = useState(false);
 
-  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+  const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setIsSubmitting(true);
-    
-    await new Promise(resolve => setTimeout(resolve, 1000));
-    
-    toast({
-      title: 'Message Sent',
-      description: "We'll get back to you as soon as possible.",
-    });
-    
-    setIsSubmitting(false);
-    (e.target as HTMLFormElement).reset();
+
+    const form = e.currentTarget;
+    const formData = new FormData(form);
+
+    try {
+      await fetch('/', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+        body: encodeForm(formData),
+      });
+
+      toast({
+        title: 'Message Sent',
+        description: "We got it — we'll get back to you as soon as possible.",
+      });
+
+      form.reset();
+    } catch {
+      toast({
+        title: 'Message failed to send',
+        description: 'Please try again or call/text us at (571) 206-2249.',
+      });
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   return (
@@ -77,17 +76,12 @@ export default function Contact() {
       {/* Hero */}
       <section className="pt-32 pb-16 bg-hero-pattern">
         <div className="section-container">
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            className="max-w-3xl"
-          >
+          <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="max-w-3xl">
             <span className="inline-block px-4 py-1.5 mb-4 text-xs font-semibold uppercase tracking-wider text-primary bg-primary/10 rounded-full border border-primary/20">
               Contact Us
             </span>
             <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold text-foreground mb-6">
-              Let's{' '}
-              <span className="text-gradient-orange">Connect</span>
+              Let's <span className="text-gradient-orange">Connect</span>
             </h1>
             <p className="text-lg text-muted-foreground">
               Ready to get your fleet back on the road? Reach out to us for service requests, quotes, or any questions.
@@ -101,11 +95,7 @@ export default function Contact() {
         <div className="section-container">
           <div className="grid lg:grid-cols-2 gap-12">
             {/* Contact Info */}
-            <motion.div
-              initial={{ opacity: 0, x: -30 }}
-              whileInView={{ opacity: 1, x: 0 }}
-              viewport={{ once: true }}
-            >
+            <motion.div initial={{ opacity: 0, x: -30 }} whileInView={{ opacity: 1, x: 0 }} viewport={{ once: true }}>
               {/* Phone CTA */}
               <div className="card-elevated p-8 mb-8 text-center">
                 <Phone className="w-12 h-12 text-primary mx-auto mb-4" />
@@ -116,9 +106,7 @@ export default function Contact() {
                 >
                   (571) 206-2249
                 </a>
-                <p className="text-muted-foreground mt-2">
-                  Fastest way to reach us during business hours
-                </p>
+                <p className="text-muted-foreground mt-2">Fastest way to reach us during business hours</p>
               </div>
 
               {/* Contact Details */}
@@ -138,9 +126,7 @@ export default function Contact() {
                       </div>
                       <div>
                         <p className="text-sm text-muted-foreground">{item.label}</p>
-                        <p className="font-medium text-foreground group-hover:text-primary transition-colors">
-                          {item.value}
-                        </p>
+                        <p className="font-medium text-foreground group-hover:text-primary transition-colors">{item.value}</p>
                       </div>
                     </a>
                   ))}
@@ -169,10 +155,7 @@ export default function Contact() {
                 </h3>
                 <div className="flex flex-wrap gap-2">
                   {serviceAreas.map((area, index) => (
-                    <span
-                      key={index}
-                      className="px-3 py-1 text-sm bg-secondary rounded-full text-foreground"
-                    >
+                    <span key={index} className="px-3 py-1 text-sm bg-secondary rounded-full text-foreground">
                       {area}
                     </span>
                   ))}
@@ -181,15 +164,25 @@ export default function Contact() {
             </motion.div>
 
             {/* Contact Form */}
-            <motion.div
-              initial={{ opacity: 0, x: 30 }}
-              whileInView={{ opacity: 1, x: 0 }}
-              viewport={{ once: true }}
-            >
+            <motion.div initial={{ opacity: 0, x: 30 }} whileInView={{ opacity: 1, x: 0 }} viewport={{ once: true }}>
               <div className="card-elevated p-8">
                 <h2 className="text-2xl font-bold text-foreground mb-6">Send Us a Message</h2>
-                
-                <form onSubmit={handleSubmit} className="space-y-6">
+
+                <form
+                  name="contact"
+                  method="POST"
+                  data-netlify="true"
+                  netlify-honeypot="bot-field"
+                  onSubmit={handleSubmit}
+                  className="space-y-6"
+                >
+                  <input type="hidden" name="form-name" value="contact" />
+                  <p className="hidden">
+                    <label>
+                      Don’t fill this out: <input name="bot-field" />
+                    </label>
+                  </p>
+
                   <div className="grid sm:grid-cols-2 gap-4">
                     <div className="space-y-2">
                       <Label htmlFor="name">Name *</Label>
@@ -219,13 +212,7 @@ export default function Contact() {
 
                   <div className="space-y-2">
                     <Label htmlFor="message">Message *</Label>
-                    <Textarea
-                      id="message"
-                      name="message"
-                      rows={5}
-                      required
-                      placeholder="Tell us about your needs..."
-                    />
+                    <Textarea id="message" name="message" rows={5} required placeholder="Tell us about your needs..." />
                   </div>
 
                   <Button type="submit" variant="hero" size="lg" className="w-full" disabled={isSubmitting}>
