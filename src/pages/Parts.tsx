@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useRef, useState, type FormEvent } from 'react';
 import { motion } from 'framer-motion';
 import { ShoppingCart, Plus, Minus, Package, Upload, Truck } from 'lucide-react';
 import { Button } from '@/components/ui/button';
@@ -58,9 +58,8 @@ const ProductCard = ({ product }: ProductCardProps) => {
   const { toast } = useToast();
 
   const handleAddToCart = () => {
-    for (let i = 0; i < quantity; i++) {
-      addItem(product);
-    }
+    for (let i = 0; i < quantity; i++) addItem(product);
+
     toast({
       title: 'Added to Cart',
       description: `${quantity}x ${product.name} added to your cart.`,
@@ -86,16 +85,13 @@ const ProductCard = ({ product }: ProductCardProps) => {
         <h3 className="text-lg font-semibold text-foreground mb-2 line-clamp-2">
           {product.name}
         </h3>
-        <p className="text-sm text-muted-foreground mb-3">
-          Part #: {product.partNumber}
-        </p>
-        <p className="text-2xl font-bold text-primary mb-4">
-          ${product.price.toFixed(2)}
-        </p>
+        <p className="text-sm text-muted-foreground mb-3">Part #: {product.partNumber}</p>
+        <p className="text-2xl font-bold text-primary mb-4">${product.price.toFixed(2)}</p>
 
         <div className="flex items-center gap-3 mb-4">
           <div className="flex items-center border border-border rounded-lg">
             <button
+              type="button"
               onClick={() => setQuantity(Math.max(1, quantity - 1))}
               className="p-2 hover:bg-secondary transition-colors"
             >
@@ -103,6 +99,7 @@ const ProductCard = ({ product }: ProductCardProps) => {
             </button>
             <span className="w-12 text-center font-medium">{quantity}</span>
             <button
+              type="button"
               onClick={() => setQuantity(quantity + 1)}
               className="p-2 hover:bg-secondary transition-colors"
             >
@@ -111,11 +108,7 @@ const ProductCard = ({ product }: ProductCardProps) => {
           </div>
         </div>
 
-        <Button
-          variant="hero"
-          className="w-full"
-          onClick={handleAddToCart}
-        >
+        <Button variant="hero" className="w-full" onClick={handleAddToCart}>
           <ShoppingCart className="w-4 h-4" />
           Add to Cart
         </Button>
@@ -128,19 +121,60 @@ export default function Parts() {
   const { toast } = useToast();
   const [isSubmitting, setIsSubmitting] = useState(false);
 
-  const handlePartRequest = async (e: React.FormEvent<HTMLFormElement>) => {
+  // IMPORTANT: Shadcn Select doesn't submit a real <select>, so we store values and submit via hidden inputs.
+  const [urgency, setUrgency] = useState('');
+  const [delivery, setDelivery] = useState('');
+
+  const fileInputRef = useRef<HTMLInputElement | null>(null);
+  const [fileLabel, setFileLabel] = useState<string>('Click to upload or drag and drop');
+
+  const handlePartRequest = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setIsSubmitting(true);
-    
-    await new Promise(resolve => setTimeout(resolve, 1000));
-    
-    toast({
-      title: 'Part Request Submitted',
-      description: "We'll contact you with availability and pricing soon.",
-    });
-    
-    setIsSubmitting(false);
-    (e.target as HTMLFormElement).reset();
+
+    const form = e.currentTarget;
+    const formData = new FormData(form);
+
+    // Include select values explicitly (belt & suspenders)
+    formData.set('urgency', urgency);
+    formData.set('delivery', delivery);
+
+    // If a file is attached, send multipart. Otherwise send urlencoded.
+    const file = formData.get('photo');
+    const hasFile = file instanceof File && file.size > 0;
+
+    try {
+      if (hasFile) {
+        await fetch('/', { method: 'POST', body: formData });
+      } else {
+        const params = new URLSearchParams();
+        for (const [key, value] of formData.entries()) {
+          if (typeof value === 'string') params.append(key, value);
+        }
+        await fetch('/', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+          body: params.toString(),
+        });
+      }
+
+      toast({
+        title: 'Part Request Submitted',
+        description: "We got it — we'll contact you with availability and pricing soon.",
+      });
+
+      form.reset();
+      setUrgency('');
+      setDelivery('');
+      setFileLabel('Click to upload or drag and drop');
+    } catch {
+      toast({
+        title: 'Submission failed',
+        description: 'Please try again or call/text us at (571) 206-2249.',
+      });
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   return (
@@ -148,17 +182,12 @@ export default function Parts() {
       {/* Hero */}
       <section className="pt-32 pb-16 bg-hero-pattern">
         <div className="section-container">
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            className="max-w-3xl"
-          >
+          <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="max-w-3xl">
             <span className="inline-block px-4 py-1.5 mb-4 text-xs font-semibold uppercase tracking-wider text-primary bg-primary/10 rounded-full border border-primary/20">
               Parts & Supplies
             </span>
             <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold text-foreground mb-6">
-              Quality Parts,{' '}
-              <span className="text-gradient-orange">Fast Delivery</span>
+              Quality Parts, <span className="text-gradient-orange">Fast Delivery</span>
             </h1>
             <p className="text-lg text-muted-foreground">
               Shop our in-stock parts or request any part with VIN-based accuracy. We source OEM and aftermarket parts for all major truck brands.
@@ -170,12 +199,7 @@ export default function Parts() {
       {/* In-Stock Parts */}
       <section className="py-24">
         <div className="section-container">
-          <SectionHeader
-            badge="In-Stock"
-            title="Buy Online Now"
-            subtitle="These parts are in stock and ready to ship."
-          />
-
+          <SectionHeader badge="In-Stock" title="Buy Online Now" subtitle="These parts are in stock and ready to ship." />
           <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
             {products.map((product) => (
               <ProductCard key={product.id} product={product} />
@@ -187,20 +211,30 @@ export default function Parts() {
       {/* Request Any Part */}
       <section className="py-24 bg-gradient-card border-y border-border" id="request-part">
         <div className="section-container">
-          <SectionHeader
-            badge="Custom Request"
-            title="Request Any Part"
-            subtitle="Can't find what you need? We can source it for you."
-          />
+          <SectionHeader badge="Custom Request" title="Request Any Part" subtitle="Can't find what you need? We can source it for you." />
 
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            className="max-w-2xl mx-auto"
-          >
+          <motion.div initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} className="max-w-2xl mx-auto">
             <div className="card-elevated p-8">
-              <form onSubmit={handlePartRequest} className="space-y-6">
+              <form
+                name="parts-request"
+                method="POST"
+                data-netlify="true"
+                netlify-honeypot="bot-field"
+                encType="multipart/form-data"
+                onSubmit={handlePartRequest}
+                className="space-y-6"
+              >
+                <input type="hidden" name="form-name" value="parts-request" />
+                <p className="hidden">
+                  <label>
+                    Don’t fill this out: <input name="bot-field" />
+                  </label>
+                </p>
+
+                {/* Hidden inputs for shadcn selects */}
+                <input type="hidden" name="urgency" value={urgency} />
+                <input type="hidden" name="delivery" value={delivery} />
+
                 <div className="grid sm:grid-cols-2 gap-4">
                   <div className="space-y-2">
                     <Label htmlFor="contact_name">Contact Name *</Label>
@@ -228,7 +262,7 @@ export default function Parts() {
                     <Truck className="w-5 h-5 text-primary" />
                     Vehicle Information
                   </h3>
-                  
+
                   <div className="space-y-4">
                     <div className="space-y-2">
                       <Label htmlFor="vin">VIN (Optional)</Label>
@@ -257,7 +291,7 @@ export default function Parts() {
                     <Package className="w-5 h-5 text-primary" />
                     Part Details
                   </h3>
-                  
+
                   <div className="space-y-4">
                     <div className="space-y-2">
                       <Label htmlFor="part_needed">Part Needed *</Label>
@@ -266,8 +300,8 @@ export default function Parts() {
 
                     <div className="grid sm:grid-cols-2 gap-4">
                       <div className="space-y-2">
-                        <Label htmlFor="urgency">Urgency</Label>
-                        <Select name="urgency">
+                        <Label>Urgency</Label>
+                        <Select value={urgency} onValueChange={setUrgency}>
                           <SelectTrigger>
                             <SelectValue placeholder="Select urgency" />
                           </SelectTrigger>
@@ -278,9 +312,10 @@ export default function Parts() {
                           </SelectContent>
                         </Select>
                       </div>
+
                       <div className="space-y-2">
-                        <Label htmlFor="delivery">Delivery Preference</Label>
-                        <Select name="delivery">
+                        <Label>Delivery Preference</Label>
+                        <Select value={delivery} onValueChange={setDelivery}>
                           <SelectTrigger>
                             <SelectValue placeholder="Select delivery" />
                           </SelectTrigger>
@@ -295,24 +330,34 @@ export default function Parts() {
 
                     <div className="space-y-2">
                       <Label htmlFor="notes">Additional Notes</Label>
-                      <Textarea
-                        id="notes"
-                        name="notes"
-                        rows={3}
-                        placeholder="Any additional details about the part or your needs..."
-                      />
+                      <Textarea id="notes" name="notes" rows={3} placeholder="Any additional details about the part or your needs..." />
                     </div>
 
                     <div className="space-y-2">
-                      <Label>Photo Upload (Optional)</Label>
-                      <div className="border-2 border-dashed border-border rounded-lg p-6 text-center hover:border-primary/50 transition-colors cursor-pointer">
+                      <Label htmlFor="photo">Photo Upload (Optional)</Label>
+
+                      <input
+                        ref={fileInputRef}
+                        id="photo"
+                        name="photo"
+                        type="file"
+                        accept="image/*"
+                        className="hidden"
+                        onChange={(e) => {
+                          const f = e.target.files?.[0];
+                          setFileLabel(f ? f.name : 'Click to upload or drag and drop');
+                        }}
+                      />
+
+                      <div
+                        onClick={() => fileInputRef.current?.click()}
+                        className="border-2 border-dashed border-border rounded-lg p-6 text-center hover:border-primary/50 transition-colors cursor-pointer"
+                        role="button"
+                        tabIndex={0}
+                      >
                         <Upload className="w-8 h-8 text-muted-foreground mx-auto mb-2" />
-                        <p className="text-sm text-muted-foreground">
-                          Click to upload or drag and drop
-                        </p>
-                        <p className="text-xs text-muted-foreground mt-1">
-                          PNG, JPG up to 10MB
-                        </p>
+                        <p className="text-sm text-muted-foreground">{fileLabel}</p>
+                        <p className="text-xs text-muted-foreground mt-1">PNG, JPG up to 10MB</p>
                       </div>
                     </div>
                   </div>
