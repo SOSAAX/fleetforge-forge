@@ -1,15 +1,13 @@
 import { useState } from 'react';
+import { Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import {
   Wrench,
   Droplets,
-  Shield,
   Package,
-  Zap,
-  CircleDot,
-  Settings,
   Phone,
   CheckCircle2,
+  ArrowRight,
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -19,41 +17,42 @@ import { SectionHeader } from '@/components/ui/section-header';
 import { Layout } from '@/components/layout/Layout';
 import { useToast } from '@/hooks/use-toast';
 
+import repairImage from '@/assets/services/repair.jpg';
+import detailingImage from '@/assets/services/detailing.jpg';
+import partsImage from '@/assets/services/parts.jpg';
+
 const serviceCategories = [
   {
+    id: 'repair',
     icon: Wrench,
-    title: 'Diagnostics & Minor Repairs',
-    description: 'On-site troubleshooting and repairs to get you back on the road.',
+    title: 'Truck Repair & Maintenance',
+    subtitle: 'Mobile diagnostics, repairs, and scheduled PM services',
+    description: 'Our certified technicians come to your location for on-site repairs, preventative maintenance, and diagnostics. No towing required.',
+    image: repairImage,
+    link: '/contact',
+    cta: 'Schedule Service',
     items: [
       'Electrical system diagnostics',
       'Check engine light diagnosis',
-      'Brake inspections and adjustments',
+      'Brake inspections & repairs',
       'Air system troubleshooting',
-      'Basic mechanical repairs',
-      'Lighting and wiring fixes',
-      'Battery testing and replacement',
-      'Starter and alternator service',
-    ],
-  },
-  {
-    icon: Shield,
-    title: 'Preventative Maintenance (PM)',
-    description: 'Keep your fleet compliant and running efficiently.',
-    items: [
-      'Oil and filter changes',
+      'Starter & alternator service',
+      'Oil & filter changes',
       'Fuel filter replacement',
-      'Air filter service',
-      'DOT inspections',
-      'Fluid level checks and top-offs',
-      'Belt and hose inspections',
-      'Tire pressure checks',
-      'PM scheduling and tracking',
+      'DOT inspection prep',
+      'Scheduled PM programs',
+      'Fleet maintenance contracts',
     ],
   },
   {
+    id: 'detailing',
     icon: Droplets,
-    title: 'Detailing Services',
-    description: 'Professional cleaning to maintain your fleet\'s image.',
+    title: 'Truck Detailing',
+    subtitle: 'Professional cleaning to maintain your fleet\'s image',
+    description: 'Keep your trucks looking sharp with our comprehensive detailing services. We handle everything from basic washes to full restoration.',
+    image: detailingImage,
+    link: '/contact',
+    cta: 'Book Detailing',
     items: [
       'Exterior truck wash',
       'Interior cab cleaning',
@@ -61,14 +60,19 @@ const serviceCategories = [
       'Engine bay degreasing',
       'Aluminum polishing',
       'Chrome detailing',
+      'Paint correction',
       'Fleet wash programs',
-      'Custom detailing packages',
     ],
   },
   {
+    id: 'parts',
     icon: Package,
-    title: 'Parts Sourcing',
-    description: 'Quality parts delivered fast with VIN-accurate matching.',
+    title: 'Parts & Supplies',
+    subtitle: 'Quality parts sourced fast with VIN-based accuracy',
+    description: 'We source OEM and aftermarket parts for all major truck brands. Fast delivery, competitive pricing, and VIN-accurate matching.',
+    image: partsImage,
+    link: '/parts',
+    cta: 'Shop Parts',
     items: [
       'OEM parts sourcing',
       'Aftermarket alternatives',
@@ -77,10 +81,88 @@ const serviceCategories = [
       'Same-day availability',
       'Competitive pricing',
       'Warranty support',
-      'Direct delivery to your location',
+      'Direct delivery',
     ],
   },
 ];
+
+interface ServiceCardProps {
+  service: typeof serviceCategories[0];
+  index: number;
+}
+
+const ServiceCard = ({ service, index }: ServiceCardProps) => {
+  const isReversed = index % 2 === 1;
+
+  return (
+    <motion.div
+      initial={{ opacity: 0, y: 40 }}
+      whileInView={{ opacity: 1, y: 0 }}
+      viewport={{ once: true, margin: '-100px' }}
+      transition={{ duration: 0.6, delay: 0.1 }}
+      className="grid lg:grid-cols-2 gap-8 lg:gap-12 items-center"
+    >
+      {/* Image */}
+      <div className={`relative ${isReversed ? 'lg:order-2' : ''}`}>
+        <div className="relative overflow-hidden rounded-2xl aspect-[16/10]">
+          <img
+            src={service.image}
+            alt={service.title}
+            className="w-full h-full object-cover transition-transform duration-500 hover:scale-105"
+          />
+          <div className="absolute inset-0 bg-gradient-to-t from-background/60 to-transparent" />
+          
+          {/* Badge */}
+          <div className="absolute top-4 left-4">
+            <div className="flex items-center gap-2 px-3 py-1.5 bg-primary rounded-full">
+              <service.icon className="w-4 h-4 text-primary-foreground" />
+              <span className="text-sm font-semibold text-primary-foreground">
+                {service.id === 'repair' ? 'Most Popular' : service.id === 'parts' ? 'Shop Online' : 'Premium'}
+              </span>
+            </div>
+          </div>
+        </div>
+        
+        {/* Decorative glow */}
+        <div className="absolute -bottom-4 -right-4 w-32 h-32 bg-primary/20 rounded-full blur-3xl pointer-events-none" />
+      </div>
+
+      {/* Content */}
+      <div className={isReversed ? 'lg:order-1' : ''}>
+        <div className="flex items-center gap-3 mb-4">
+          <div className="w-12 h-12 rounded-xl bg-primary/10 flex items-center justify-center">
+            <service.icon className="w-6 h-6 text-primary" />
+          </div>
+          <div>
+            <h2 className="text-2xl md:text-3xl font-bold text-foreground">{service.title}</h2>
+            <p className="text-muted-foreground">{service.subtitle}</p>
+          </div>
+        </div>
+
+        <p className="text-muted-foreground mb-6 leading-relaxed">
+          {service.description}
+        </p>
+
+        {/* Service items grid */}
+        <div className="grid grid-cols-2 gap-2 mb-6">
+          {service.items.map((item, i) => (
+            <div key={i} className="flex items-start gap-2">
+              <CheckCircle2 className="w-4 h-4 text-primary flex-shrink-0 mt-0.5" />
+              <span className="text-sm text-foreground">{item}</span>
+            </div>
+          ))}
+        </div>
+
+        <Button variant="hero" asChild>
+          <Link to={service.link} className="inline-flex items-center gap-2">
+            {service.cta}
+            <ArrowRight className="w-4 h-4" />
+          </Link>
+        </Button>
+      </div>
+    </motion.div>
+  );
+};
 
 export default function Services() {
   const { toast } = useToast();
@@ -90,7 +172,6 @@ export default function Services() {
     e.preventDefault();
     setIsSubmitting(true);
     
-    // Simulate form submission
     await new Promise(resolve => setTimeout(resolve, 1000));
     
     toast({
@@ -120,47 +201,38 @@ export default function Services() {
               <span className="text-gradient-orange">Truck Service</span>
             </h1>
             <p className="text-lg text-muted-foreground">
-              From quick repairs to comprehensive maintenance programs, we bring expert service directly to your location.
+              From quick repairs to comprehensive maintenance programs, we bring expert service directly to your location. Three core services to keep your fleet running.
             </p>
           </motion.div>
+        </div>
+      </section>
+
+      {/* Quick Nav */}
+      <section className="py-6 border-y border-border bg-navy-light sticky top-16 z-30">
+        <div className="section-container">
+          <div className="flex flex-wrap justify-center gap-4">
+            {serviceCategories.map((cat) => (
+              <a
+                key={cat.id}
+                href={`#${cat.id}`}
+                className="flex items-center gap-2 px-4 py-2 rounded-lg bg-secondary hover:bg-primary/10 hover:text-primary transition-all text-sm font-medium text-foreground"
+              >
+                <cat.icon className="w-4 h-4" />
+                {cat.title.split(' ')[0]} {cat.title.includes('&') ? '& ' + cat.title.split('& ')[1].split(' ')[0] : ''}
+              </a>
+            ))}
+          </div>
         </div>
       </section>
 
       {/* Service Categories */}
       <section className="py-24">
         <div className="section-container">
-          <div className="space-y-16">
-            {serviceCategories.map((category, index) => (
-              <motion.div
-                key={index}
-                initial={{ opacity: 0, y: 30 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true, margin: '-100px' }}
-                transition={{ delay: index * 0.1 }}
-                className="grid lg:grid-cols-2 gap-8 items-start"
-              >
-                <div className={index % 2 === 1 ? 'lg:order-2' : ''}>
-                  <div className="flex items-center gap-4 mb-4">
-                    <div className="w-14 h-14 rounded-xl bg-primary/10 flex items-center justify-center">
-                      <category.icon className="w-7 h-7 text-primary" />
-                    </div>
-                    <div>
-                      <h2 className="text-2xl font-bold text-foreground">{category.title}</h2>
-                      <p className="text-muted-foreground">{category.description}</p>
-                    </div>
-                  </div>
-                </div>
-                <div className={`card-elevated p-6 ${index % 2 === 1 ? 'lg:order-1' : ''}`}>
-                  <ul className="grid sm:grid-cols-2 gap-3">
-                    {category.items.map((item, i) => (
-                      <li key={i} className="flex items-start gap-2">
-                        <CheckCircle2 className="w-5 h-5 text-primary flex-shrink-0 mt-0.5" />
-                        <span className="text-foreground text-sm">{item}</span>
-                      </li>
-                    ))}
-                  </ul>
-                </div>
-              </motion.div>
+          <div className="space-y-32">
+            {serviceCategories.map((service, index) => (
+              <div key={service.id} id={service.id}>
+                <ServiceCard service={service} index={index} />
+              </div>
             ))}
           </div>
         </div>
@@ -212,7 +284,7 @@ export default function Services() {
 
                 <div className="space-y-2">
                   <Label htmlFor="service">Service Needed *</Label>
-                  <Input id="service" name="service" required placeholder="e.g., Brake repair, PM service" />
+                  <Input id="service" name="service" required placeholder="e.g., Brake repair, PM service, Detailing" />
                 </div>
 
                 <div className="space-y-2">
