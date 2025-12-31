@@ -6,15 +6,18 @@ import {
   User,
   Clock,
   Shield,
-  DollarSign,
-  Users,
   Phone,
   CheckCircle2,
   ChevronRight,
+  MapPin,
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { SectionHeader } from '@/components/ui/section-header';
 import { Layout } from '@/components/layout/Layout';
+import { TrustBadges } from '@/components/ui/trust-badges';
+import { HeroSection } from '@/components/ui/hero-section';
+
+import dispatchImage from '@/assets/hero/dispatch.jpg';
 
 const whoItsFor = [
   {
@@ -68,32 +71,33 @@ export default function FleetContracts() {
   return (
     <Layout>
       {/* Hero */}
-      <section className="pt-32 pb-16 bg-hero-pattern">
-        <div className="section-container">
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            className="max-w-3xl"
-          >
-            <span className="inline-block px-4 py-1.5 mb-4 text-xs font-semibold uppercase tracking-wider text-primary bg-primary/10 rounded-full border border-primary/20">
-              Fleet Programs
-            </span>
-            <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold text-foreground mb-6">
-              Fleet Contracts &{' '}
-              <span className="text-gradient-orange">Yard Programs</span>
-            </h1>
-            <p className="text-lg text-muted-foreground mb-8">
-              Maximize uptime with predictable maintenance costs, priority service, and a dedicated team focused on keeping your fleet running.
-            </p>
-            <Button variant="hero" size="xl" asChild>
-              <Link to="/contact">Get a Custom Quote</Link>
-            </Button>
-          </motion.div>
+      <HeroSection
+        backgroundImage={dispatchImage}
+        badge="Fleet Programs"
+        title={
+          <>
+            Fleet Contracts &{' '}
+            <span className="text-gradient-orange">Yard Programs</span>
+          </>
+        }
+        subtitle="Maximize uptime with predictable maintenance costs, priority service, and a dedicated team focused on keeping your fleet running."
+      >
+        <div className="flex flex-col sm:flex-row gap-4 mb-6">
+          <Button variant="hero" size="xl" asChild>
+            <Link to="/contact">Get a Custom Quote</Link>
+          </Button>
+          <Button variant="heroOutline" size="xl" asChild>
+            <a href="tel:5712062249" className="flex items-center gap-2">
+              <Phone className="w-5 h-5" />
+              Call to Discuss
+            </a>
+          </Button>
         </div>
-      </section>
+        <TrustBadges variant="compact" />
+      </HeroSection>
 
       {/* Who It's For */}
-      <section className="py-24">
+      <section className="py-20">
         <div className="section-container">
           <SectionHeader
             badge="Who It's For"
@@ -101,7 +105,7 @@ export default function FleetContracts() {
             subtitle="Whether you run one truck or fifty, we have a program that fits."
           />
 
-          <div className="grid md:grid-cols-3 gap-6">
+          <div className="grid md:grid-cols-3 gap-5">
             {whoItsFor.map((item, index) => (
               <motion.div
                 key={index}
@@ -123,7 +127,7 @@ export default function FleetContracts() {
       </section>
 
       {/* What's Included */}
-      <section className="py-24 bg-gradient-card border-y border-border">
+      <section className="py-20 bg-gradient-card border-y border-border">
         <div className="section-container">
           <SectionHeader
             badge="What's Included"
@@ -151,7 +155,7 @@ export default function FleetContracts() {
       </section>
 
       {/* How Pricing Works */}
-      <section className="py-24">
+      <section className="py-20">
         <div className="section-container">
           <SectionHeader
             badge="Pricing"
@@ -159,7 +163,7 @@ export default function FleetContracts() {
             subtitle="We'll create a custom quote based on your fleet size and service needs."
           />
 
-          <div className="grid md:grid-cols-3 gap-6">
+          <div className="grid md:grid-cols-3 gap-5">
             {pricingTiers.map((tier, index) => (
               <motion.div
                 key={index}
@@ -203,7 +207,7 @@ export default function FleetContracts() {
             initial={{ opacity: 0 }}
             whileInView={{ opacity: 1 }}
             viewport={{ once: true }}
-            className="text-center text-muted-foreground mt-8"
+            className="text-center text-muted-foreground text-sm mt-8"
           >
             * Pricing varies based on fleet size, service frequency, and location. Contact us for a personalized quote.
           </motion.p>
@@ -211,7 +215,7 @@ export default function FleetContracts() {
       </section>
 
       {/* CTA */}
-      <section className="py-24 bg-gradient-card border-y border-border">
+      <section className="py-20 bg-gradient-card border-y border-border">
         <div className="section-container text-center">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
@@ -225,7 +229,7 @@ export default function FleetContracts() {
             <p className="text-muted-foreground mb-8">
               Let's discuss a fleet program tailored to your operation.
             </p>
-            <div className="flex flex-col sm:flex-row gap-4 justify-center">
+            <div className="flex flex-col sm:flex-row gap-4 justify-center mb-8">
               <Button variant="hero" size="xl" asChild>
                 <Link to="/contact">Request a Quote</Link>
               </Button>
@@ -236,6 +240,7 @@ export default function FleetContracts() {
                 </a>
               </Button>
             </div>
+            <TrustBadges />
           </motion.div>
         </div>
       </section>
