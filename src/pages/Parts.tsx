@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { motion } from 'framer-motion';
-import { ShoppingCart, Plus, Minus, Package, Upload, Truck, Phone, MessageSquare } from 'lucide-react';
+import { ShoppingCart, Plus, Minus, Package, Upload, Truck } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
@@ -14,12 +14,9 @@ import {
 } from '@/components/ui/select';
 import { SectionHeader } from '@/components/ui/section-header';
 import { Layout } from '@/components/layout/Layout';
-import { HeroSection } from '@/components/ui/hero-section';
-import { TrustBadges } from '@/components/ui/trust-badges';
 import { useCart, Product } from '@/contexts/CartContext';
 import { useToast } from '@/hooks/use-toast';
 
-import partsWarehouseImage from '@/assets/hero/parts-warehouse.jpg';
 import bumperImage from '@/assets/products/bumper.png';
 import headlightRightImage from '@/assets/products/headlight-right.png';
 import headlightLeftImage from '@/assets/products/headlight-left.png';
@@ -83,11 +80,10 @@ const ProductCard = ({ product }: ProductCardProps) => {
           src={product.image}
           alt={product.name}
           className="max-h-full max-w-full object-contain transition-transform duration-300 group-hover:scale-105"
-          loading="lazy"
         />
       </div>
-      <div className="p-5">
-        <h3 className="text-base font-semibold text-foreground mb-2 line-clamp-2">
+      <div className="p-6">
+        <h3 className="text-lg font-semibold text-foreground mb-2 line-clamp-2">
           {product.name}
         </h3>
         <p className="text-sm text-muted-foreground mb-3">
@@ -105,7 +101,7 @@ const ProductCard = ({ product }: ProductCardProps) => {
             >
               <Minus className="w-4 h-4" />
             </button>
-            <span className="w-10 text-center font-medium text-sm">{quantity}</span>
+            <span className="w-12 text-center font-medium">{quantity}</span>
             <button
               onClick={() => setQuantity(quantity + 1)}
               className="p-2 hover:bg-secondary transition-colors"
@@ -150,33 +146,29 @@ export default function Parts() {
   return (
     <Layout>
       {/* Hero */}
-      <HeroSection
-        backgroundImage={partsWarehouseImage}
-        badge="Parts & Supplies"
-        title={
-          <>
-            Quality Parts,{' '}
-            <span className="text-gradient-orange">Fast Delivery</span>
-          </>
-        }
-        subtitle="Shop our in-stock parts or request any part with VIN-based accuracy. We source OEM and aftermarket parts for all major truck brands."
-      >
-        <div className="flex flex-col sm:flex-row gap-4 mb-6">
-          <Button variant="hero" size="lg" asChild>
-            <a href="#in-stock">Shop In-Stock Parts</a>
-          </Button>
-          <Button variant="heroOutline" size="lg" asChild>
-            <a href="#request-part" className="flex items-center gap-2">
-              <MessageSquare className="w-4 h-4" />
-              Request Custom Part
-            </a>
-          </Button>
+      <section className="pt-32 pb-16 bg-hero-pattern">
+        <div className="section-container">
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            className="max-w-3xl"
+          >
+            <span className="inline-block px-4 py-1.5 mb-4 text-xs font-semibold uppercase tracking-wider text-primary bg-primary/10 rounded-full border border-primary/20">
+              Parts & Supplies
+            </span>
+            <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold text-foreground mb-6">
+              Quality Parts,{' '}
+              <span className="text-gradient-orange">Fast Delivery</span>
+            </h1>
+            <p className="text-lg text-muted-foreground">
+              Shop our in-stock parts or request any part with VIN-based accuracy. We source OEM and aftermarket parts for all major truck brands.
+            </p>
+          </motion.div>
         </div>
-        <TrustBadges variant="compact" />
-      </HeroSection>
+      </section>
 
       {/* In-Stock Parts */}
-      <section className="py-20" id="in-stock">
+      <section className="py-24">
         <div className="section-container">
           <SectionHeader
             badge="In-Stock"
@@ -184,30 +176,16 @@ export default function Parts() {
             subtitle="These parts are in stock and ready to ship."
           />
 
-          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
             {products.map((product) => (
               <ProductCard key={product.id} product={product} />
             ))}
           </div>
-
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            className="text-center mt-10"
-          >
-            <p className="text-muted-foreground mb-4">
-              Don't see what you need? We can source almost any part.
-            </p>
-            <Button variant="outline" asChild>
-              <a href="#request-part">Request a Part Quote</a>
-            </Button>
-          </motion.div>
         </div>
       </section>
 
       {/* Request Any Part */}
-      <section className="py-20 bg-gradient-card border-y border-border" id="request-part">
+      <section className="py-24 bg-gradient-card border-y border-border" id="request-part">
         <div className="section-container">
           <SectionHeader
             badge="Custom Request"
@@ -343,37 +321,8 @@ export default function Parts() {
                 <Button type="submit" variant="hero" size="lg" className="w-full" disabled={isSubmitting}>
                   {isSubmitting ? 'Submitting...' : 'Submit Part Request'}
                 </Button>
-
-                <p className="text-center text-sm text-muted-foreground">
-                  Typical response time: Within 2 hours during business hours
-                </p>
               </form>
             </div>
-          </motion.div>
-        </div>
-      </section>
-
-      {/* CTA */}
-      <section className="py-20">
-        <div className="section-container text-center">
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            className="max-w-2xl mx-auto"
-          >
-            <h2 className="text-3xl md:text-4xl font-bold text-foreground mb-4">
-              Need Help Finding a Part?
-            </h2>
-            <p className="text-muted-foreground mb-8">
-              Call us directly and we'll help you find exactly what you need.
-            </p>
-            <Button variant="hero" size="xl" asChild>
-              <a href="tel:5712062249" className="flex items-center gap-2">
-                <Phone className="w-5 h-5" />
-                (571) 206-2249
-              </a>
-            </Button>
           </motion.div>
         </div>
       </section>

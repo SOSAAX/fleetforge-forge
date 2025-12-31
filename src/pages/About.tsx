@@ -9,15 +9,10 @@ import {
   Wrench,
   Phone,
   CheckCircle2,
-  Award,
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { SectionHeader } from '@/components/ui/section-header';
 import { Layout } from '@/components/layout/Layout';
-import { HeroSection } from '@/components/ui/hero-section';
-import { TrustBadges } from '@/components/ui/trust-badges';
-
-import teamImage from '@/assets/hero/team.jpg';
 
 const values = [
   {
@@ -44,51 +39,40 @@ const values = [
 
 const stats = [
   { value: 'NoVA', label: 'Service Area' },
-  { value: '7 Days', label: 'Weekly Coverage' },
-  { value: '7AM-9PM', label: 'Business Hours' },
+  { value: '7-9', label: 'Hours Daily' },
+  { value: '100%', label: 'Satisfaction Goal' },
   { value: 'Fast', label: 'Response Time' },
-];
-
-const trustBadges = [
-  { icon: Shield, text: 'Fully Insured' },
-  { icon: Award, text: 'Professional Service' },
-  { icon: TruckIcon, text: 'Mobile Fleet' },
-  { icon: Wrench, text: 'All Truck Brands' },
 ];
 
 export default function About() {
   return (
     <Layout>
       {/* Hero */}
-      <HeroSection
-        backgroundImage={teamImage}
-        badge="About FleetForge"
-        title={
-          <>
-            Keeping Your{' '}
-            <span className="text-gradient-orange">Fleet Moving</span>
-          </>
-        }
-        subtitle="FleetForge Truck Solutions provides professional mobile repair, maintenance, and parts support to owner-operators and commercial fleets across Northern Virginia."
-      >
-        <div className="flex flex-col sm:flex-row gap-4 mb-6">
-          <Button variant="hero" size="lg" asChild>
-            <Link to="/contact">Contact Us</Link>
-          </Button>
-          <Button variant="heroOutline" size="lg" asChild>
-            <a href="tel:5712062249" className="flex items-center gap-2">
-              <Phone className="w-4 h-4" />
-              Call Now
-            </a>
-          </Button>
+      <section className="pt-32 pb-16 bg-hero-pattern">
+        <div className="section-container">
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            className="max-w-3xl"
+          >
+            <span className="inline-block px-4 py-1.5 mb-4 text-xs font-semibold uppercase tracking-wider text-primary bg-primary/10 rounded-full border border-primary/20">
+              About Us
+            </span>
+            <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold text-foreground mb-6">
+              Keeping Your{' '}
+              <span className="text-gradient-orange">Fleet Moving</span>
+            </h1>
+            <p className="text-lg text-muted-foreground">
+              FleetForge Truck Solutions provides professional mobile repair, maintenance, and parts support to owner-operators and commercial fleets across Northern Virginia.
+            </p>
+          </motion.div>
         </div>
-        <TrustBadges variant="compact" />
-      </HeroSection>
+      </section>
 
       {/* Stats */}
-      <section className="py-10 border-y border-border bg-card/50">
+      <section className="py-12 border-y border-border bg-navy-light">
         <div className="section-container">
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-8">
             {stats.map((stat, index) => (
               <motion.div
                 key={index}
@@ -98,7 +82,7 @@ export default function About() {
                 transition={{ delay: index * 0.1 }}
                 className="text-center"
               >
-                <p className="text-2xl md:text-3xl font-bold text-primary mb-1">{stat.value}</p>
+                <p className="text-3xl md:text-4xl font-bold text-primary mb-1">{stat.value}</p>
                 <p className="text-sm text-muted-foreground">{stat.label}</p>
               </motion.div>
             ))}
@@ -107,7 +91,7 @@ export default function About() {
       </section>
 
       {/* Story */}
-      <section className="py-20">
+      <section className="py-24">
         <div className="section-container">
           <div className="grid lg:grid-cols-2 gap-12 items-center">
             <motion.div
@@ -115,11 +99,8 @@ export default function About() {
               whileInView={{ opacity: 1, x: 0 }}
               viewport={{ once: true }}
             >
-              <span className="inline-block px-4 py-1.5 mb-4 text-xs font-semibold uppercase tracking-wider text-primary bg-primary/10 rounded-full border border-primary/20">
-                Our Story
-              </span>
               <h2 className="text-3xl md:text-4xl font-bold text-foreground mb-6">
-                Built for Fleet Operators
+                Our Story
               </h2>
               <div className="space-y-4 text-muted-foreground">
                 <p>
@@ -138,37 +119,19 @@ export default function About() {
               initial={{ opacity: 0, x: 30 }}
               whileInView={{ opacity: 1, x: 0 }}
               viewport={{ once: true }}
-              className="space-y-4"
+              className="relative"
             >
-              {/* Trust Badges Card */}
-              <div className="card-elevated p-6">
-                <h3 className="font-semibold text-foreground mb-4">Why Choose FleetForge</h3>
-                <div className="grid grid-cols-2 gap-4">
-                  {trustBadges.map((badge, index) => (
-                    <div key={index} className="flex items-center gap-3">
-                      <div className="w-10 h-10 rounded-lg bg-primary/10 flex items-center justify-center flex-shrink-0">
-                        <badge.icon className="w-5 h-5 text-primary" />
-                      </div>
-                      <span className="text-sm font-medium text-foreground">{badge.text}</span>
-                    </div>
-                  ))}
-                </div>
+              <div className="aspect-square bg-navy-medium rounded-2xl border border-border flex items-center justify-center">
+                <TruckIcon className="w-32 h-32 text-primary/20" />
               </div>
-
-              {/* Service Area Card */}
-              <div className="card-elevated p-6">
-                <h3 className="font-semibold text-foreground mb-3">Service Area</h3>
-                <p className="text-muted-foreground text-sm">
-                  Serving Ashburn, Sterling, Leesburg, Herndon, Reston, Chantilly, Fairfax, Tysons, Alexandria, Arlington, Manassas, and Woodbridge.
-                </p>
-              </div>
+              <div className="absolute -bottom-6 -left-6 w-32 h-32 bg-primary/10 rounded-full blur-2xl" />
             </motion.div>
           </div>
         </div>
       </section>
 
       {/* Values */}
-      <section className="py-20 bg-gradient-card border-y border-border">
+      <section className="py-24 bg-gradient-card border-y border-border">
         <div className="section-container">
           <SectionHeader
             badge="Our Values"
@@ -176,7 +139,7 @@ export default function About() {
             subtitle="The principles that guide everything we do."
           />
 
-          <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-5">
+          <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-6">
             {values.map((value, index) => (
               <motion.div
                 key={index}
@@ -198,11 +161,11 @@ export default function About() {
       </section>
 
       {/* Why Choose Us */}
-      <section className="py-20">
+      <section className="py-24">
         <div className="section-container">
           <SectionHeader
-            badge="The Difference"
-            title="The FleetForge Advantage"
+            badge="Why FleetForge"
+            title="The FleetForge Difference"
           />
 
           <motion.div
@@ -216,7 +179,7 @@ export default function About() {
                 {[
                   'Mobile service that comes to you',
                   'Fast response times',
-                  'Experienced, skilled technicians',
+                  'Experienced, certified technicians',
                   'Transparent, upfront pricing',
                   'Quality OEM and aftermarket parts',
                   'Fleet contracts with priority service',
@@ -235,7 +198,7 @@ export default function About() {
       </section>
 
       {/* CTA */}
-      <section className="py-20 bg-gradient-card border-y border-border">
+      <section className="py-24 bg-gradient-card border-y border-border">
         <div className="section-container text-center">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
@@ -249,7 +212,7 @@ export default function About() {
             <p className="text-muted-foreground mb-8">
               Let's discuss how we can help keep your fleet on the road.
             </p>
-            <div className="flex flex-col sm:flex-row gap-4 justify-center mb-8">
+            <div className="flex flex-col sm:flex-row gap-4 justify-center">
               <Button variant="hero" size="xl" asChild>
                 <Link to="/contact">Contact Us</Link>
               </Button>
@@ -260,7 +223,6 @@ export default function About() {
                 </a>
               </Button>
             </div>
-            <TrustBadges />
           </motion.div>
         </div>
       </section>
