@@ -7,15 +7,17 @@ import {
   MapPin,
   Clock,
   Send,
-  CheckCircle2,
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Label } from '@/components/ui/label';
-import { SectionHeader } from '@/components/ui/section-header';
 import { Layout } from '@/components/layout/Layout';
+import { HeroSection } from '@/components/ui/hero-section';
+import { TrustBadges } from '@/components/ui/trust-badges';
 import { useToast } from '@/hooks/use-toast';
+
+import heroImage from '@/assets/hero/hero-main.jpg';
 
 const serviceAreas = [
   'Ashburn',
@@ -75,31 +77,25 @@ export default function Contact() {
   return (
     <Layout>
       {/* Hero */}
-      <section className="pt-32 pb-16 bg-hero-pattern">
-        <div className="section-container">
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            className="max-w-3xl"
-          >
-            <span className="inline-block px-4 py-1.5 mb-4 text-xs font-semibold uppercase tracking-wider text-primary bg-primary/10 rounded-full border border-primary/20">
-              Contact Us
-            </span>
-            <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold text-foreground mb-6">
-              Let's{' '}
-              <span className="text-gradient-orange">Connect</span>
-            </h1>
-            <p className="text-lg text-muted-foreground">
-              Ready to get your fleet back on the road? Reach out to us for service requests, quotes, or any questions.
-            </p>
-          </motion.div>
-        </div>
-      </section>
+      <HeroSection
+        backgroundImage={heroImage}
+        badge="Contact Us"
+        title={
+          <>
+            Let's{' '}
+            <span className="text-gradient-orange">Connect</span>
+          </>
+        }
+        subtitle="Ready to get your fleet back on the road? Reach out to us for service requests, quotes, or any questions."
+        className="min-h-[50vh]"
+      >
+        <TrustBadges variant="compact" />
+      </HeroSection>
 
       {/* Contact Section */}
-      <section className="py-24">
+      <section className="py-20">
         <div className="section-container">
-          <div className="grid lg:grid-cols-2 gap-12">
+          <div className="grid lg:grid-cols-2 gap-10">
             {/* Contact Info */}
             <motion.div
               initial={{ opacity: 0, x: -30 }}
@@ -107,12 +103,12 @@ export default function Contact() {
               viewport={{ once: true }}
             >
               {/* Phone CTA */}
-              <div className="card-elevated p-8 mb-8 text-center">
+              <div className="card-elevated p-8 mb-6 text-center">
                 <Phone className="w-12 h-12 text-primary mx-auto mb-4" />
                 <h2 className="text-2xl font-bold text-foreground mb-2">Call or Text Us</h2>
                 <a
                   href="tel:5712062249"
-                  className="text-3xl md:text-4xl font-bold text-primary hover:text-orange-glow transition-colors"
+                  className="text-3xl md:text-4xl font-bold text-primary hover:text-primary/80 transition-colors"
                 >
                   (571) 206-2249
                 </a>
@@ -122,9 +118,9 @@ export default function Contact() {
               </div>
 
               {/* Contact Details */}
-              <div className="card-elevated p-6 mb-8">
+              <div className="card-elevated p-6 mb-6">
                 <h3 className="font-semibold text-foreground mb-4">Contact Information</h3>
-                <div className="space-y-4">
+                <div className="space-y-3">
                   {contactInfo.map((item, index) => (
                     <a
                       key={index}
@@ -133,7 +129,7 @@ export default function Contact() {
                       rel={item.href.startsWith('http') ? 'noopener noreferrer' : undefined}
                       className="flex items-center gap-4 p-3 rounded-lg hover:bg-secondary transition-colors group"
                     >
-                      <div className="w-10 h-10 rounded-lg bg-primary/10 flex items-center justify-center">
+                      <div className="w-10 h-10 rounded-lg bg-primary/10 flex items-center justify-center flex-shrink-0">
                         <item.icon className="w-5 h-5 text-primary" />
                       </div>
                       <div>
@@ -148,7 +144,7 @@ export default function Contact() {
               </div>
 
               {/* Business Hours */}
-              <div className="card-elevated p-6 mb-8">
+              <div className="card-elevated p-6 mb-6">
                 <h3 className="font-semibold text-foreground mb-4 flex items-center gap-2">
                   <Clock className="w-5 h-5 text-primary" />
                   Business Hours
@@ -171,7 +167,7 @@ export default function Contact() {
                   {serviceAreas.map((area, index) => (
                     <span
                       key={index}
-                      className="px-3 py-1 text-sm bg-secondary rounded-full text-foreground"
+                      className="px-3 py-1.5 text-sm bg-secondary rounded-full text-foreground"
                     >
                       {area}
                     </span>
@@ -186,10 +182,10 @@ export default function Contact() {
               whileInView={{ opacity: 1, x: 0 }}
               viewport={{ once: true }}
             >
-              <div className="card-elevated p-8">
+              <div className="card-elevated p-8" id="contact-form">
                 <h2 className="text-2xl font-bold text-foreground mb-6">Send Us a Message</h2>
                 
-                <form onSubmit={handleSubmit} className="space-y-6">
+                <form onSubmit={handleSubmit} className="space-y-5">
                   <div className="grid sm:grid-cols-2 gap-4">
                     <div className="space-y-2">
                       <Label htmlFor="name">Name *</Label>
@@ -238,10 +234,38 @@ export default function Contact() {
                       </>
                     )}
                   </Button>
+
+                  <p className="text-center text-sm text-muted-foreground">
+                    We typically respond within 2 hours during business hours
+                  </p>
                 </form>
               </div>
             </motion.div>
           </div>
+        </div>
+      </section>
+
+      {/* CTA */}
+      <section className="py-16 bg-gradient-card border-y border-border">
+        <div className="section-container text-center">
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+          >
+            <h2 className="text-2xl md:text-3xl font-bold text-foreground mb-4">
+              Prefer to Talk?
+            </h2>
+            <p className="text-muted-foreground mb-6">
+              Give us a call—we're here to help.
+            </p>
+            <Button variant="hero" size="xl" asChild>
+              <a href="tel:5712062249" className="flex items-center gap-2">
+                <Phone className="w-5 h-5" />
+                (571) 206-2249
+              </a>
+            </Button>
+          </motion.div>
         </div>
       </section>
     </Layout>
