@@ -1,46 +1,45 @@
 <!doctype html>
 <html>
   <body>
-    <!-- Service Request -->
     <form name="service-request" method="POST" data-netlify="true" netlify-honeypot="bot-field">
       <input type="hidden" name="form-name" value="service-request" />
-      <p style="display:none">
-        <label>Don’t fill this out: <input name="bot-field" /></label>
-      </p>
+      <p style="display:none"><label>Don’t fill this out: <input name="bot-field" /></label></p>
       <input name="name" />
       <input name="phone" />
       <input name="email" />
       <input name="company" />
-      <textarea name="message"></textarea>
+      <input name="location" />
+      <input name="service" />
+      <textarea name="notes"></textarea>
     </form>
 
-    <!-- Parts Request -->
-    <form name="parts-request" method="POST" data-netlify="true" netlify-honeypot="bot-field">
-      <input type="hidden" name="form-name" value="parts-request" />
-      <p style="display:none">
-        <label>Don’t fill this out: <input name="bot-field" /></label>
-      </p>
-      <input name="contactName" />
-      <input name="phone" />
-      <input name="email" />
-      <input name="company" />
-      <input name="vin" />
-      <input name="partNumber" />
-      <textarea name="message"></textarea>
-    </form>
-
-    <!-- Contact -->
     <form name="contact" method="POST" data-netlify="true" netlify-honeypot="bot-field">
       <input type="hidden" name="form-name" value="contact" />
-      <p style="display:none">
-        <label>Don’t fill this out: <input name="bot-field" /></label>
-      </p>
+      <p style="display:none"><label>Don’t fill this out: <input name="bot-field" /></label></p>
       <input name="name" />
-      <input name="phone" />
-      <input name="email" />
       <input name="company" />
+      <input name="email" />
+      <input name="phone" />
       <input name="subject" />
       <textarea name="message"></textarea>
+    </form>
+
+    <form name="parts-request" method="POST" data-netlify="true" netlify-honeypot="bot-field" enctype="multipart/form-data">
+      <input type="hidden" name="form-name" value="parts-request" />
+      <p style="display:none"><label>Don’t fill this out: <input name="bot-field" /></label></p>
+      <input name="contact_name" />
+      <input name="company_name" />
+      <input name="phone" />
+      <input name="email" />
+      <input name="vin" />
+      <input name="year" />
+      <input name="make" />
+      <input name="model" />
+      <input name="part_needed" />
+      <input name="urgency" />
+      <input name="delivery" />
+      <textarea name="notes"></textarea>
+      <input type="file" name="photo" />
     </form>
   </body>
 </html>
