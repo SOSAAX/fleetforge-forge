@@ -1,14 +1,7 @@
 import { useState, type FormEvent } from 'react';
 import { Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import {
-  Wrench,
-  Droplets,
-  Package,
-  Phone,
-  CheckCircle2,
-  ArrowRight,
-} from 'lucide-react';
+import { Wrench, Droplets, Package, Phone, CheckCircle2, ArrowRight } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
@@ -105,7 +98,6 @@ const ServiceCard = ({ service, index }: ServiceCardProps) => {
       transition={{ duration: 0.6, delay: 0.1 }}
       className="grid lg:grid-cols-2 gap-8 lg:gap-12 items-center"
     >
-      {/* Image */}
       <div className={`relative ${isReversed ? 'lg:order-2' : ''}`}>
         <div className="relative overflow-hidden rounded-2xl aspect-[16/10]">
           <img
@@ -114,45 +106,31 @@ const ServiceCard = ({ service, index }: ServiceCardProps) => {
             className="w-full h-full object-cover transition-transform duration-500 hover:scale-105"
           />
           <div className="absolute inset-0 bg-gradient-to-t from-background/60 to-transparent" />
-
-          {/* Badge */}
           <div className="absolute top-4 left-4">
             <div className="flex items-center gap-2 px-3 py-1.5 bg-primary rounded-full">
               <service.icon className="w-4 h-4 text-primary-foreground" />
               <span className="text-sm font-semibold text-primary-foreground">
-                {service.id === 'repair'
-                  ? 'Most Popular'
-                  : service.id === 'parts'
-                  ? 'Shop Online'
-                  : 'Premium'}
+                {service.id === 'repair' ? 'Most Popular' : service.id === 'parts' ? 'Shop Online' : 'Premium'}
               </span>
             </div>
           </div>
         </div>
-
-        {/* Decorative glow */}
         <div className="absolute -bottom-4 -right-4 w-32 h-32 bg-primary/20 rounded-full blur-3xl pointer-events-none" />
       </div>
 
-      {/* Content */}
       <div className={isReversed ? 'lg:order-1' : ''}>
         <div className="flex items-center gap-3 mb-4">
           <div className="w-12 h-12 rounded-xl bg-primary/10 flex items-center justify-center">
             <service.icon className="w-6 h-6 text-primary" />
           </div>
           <div>
-            <h2 className="text-2xl md:text-3xl font-bold text-foreground">
-              {service.title}
-            </h2>
+            <h2 className="text-2xl md:text-3xl font-bold text-foreground">{service.title}</h2>
             <p className="text-muted-foreground">{service.subtitle}</p>
           </div>
         </div>
 
-        <p className="text-muted-foreground mb-6 leading-relaxed">
-          {service.description}
-        </p>
+        <p className="text-muted-foreground mb-6 leading-relaxed">{service.description}</p>
 
-        {/* Service items grid */}
         <div className="grid grid-cols-2 gap-2 mb-6">
           {service.items.map((item, i) => (
             <div key={i} className="flex items-start gap-2">
@@ -176,7 +154,6 @@ const ServiceCard = ({ service, index }: ServiceCardProps) => {
 function encodeForm(formData: FormData) {
   const params = new URLSearchParams();
   for (const [key, value] of formData.entries()) {
-    // ignore files in urlencoded mode
     if (typeof value === 'string') params.append(key, value);
   }
   return params.toString();
@@ -193,12 +170,16 @@ export default function Services() {
     const form = e.currentTarget;
     const formData = new FormData(form);
 
+    formData.set('form-name', 'service-request');
+
     try {
-      await fetch('/', {
+      const res = await fetch('/', {
         method: 'POST',
         headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
         body: encodeForm(formData),
       });
+
+      if (!res.ok) throw new Error(`HTTP ${res.status}`);
 
       toast({
         title: 'Service Request Submitted',
@@ -206,7 +187,7 @@ export default function Services() {
       });
 
       form.reset();
-    } catch (err) {
+    } catch {
       toast({
         title: 'Submission failed',
         description: 'Please try again or call/text us at (571) 206-2249.',
@@ -218,14 +199,9 @@ export default function Services() {
 
   return (
     <Layout>
-      {/* Hero */}
       <section className="pt-32 pb-16 bg-hero-pattern">
         <div className="section-container">
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            className="max-w-3xl"
-          >
+          <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="max-w-3xl">
             <span className="inline-block px-4 py-1.5 mb-4 text-xs font-semibold uppercase tracking-wider text-primary bg-primary/10 rounded-full border border-primary/20">
               Our Services
             </span>
@@ -233,13 +209,12 @@ export default function Services() {
               Professional Mobile <span className="text-gradient-orange">Truck Service</span>
             </h1>
             <p className="text-lg text-muted-foreground">
-              From quick repairs to comprehensive maintenance programs, we bring expert service directly to your location. Three core services to keep your fleet running.
+              From quick repairs to comprehensive maintenance programs, we bring expert service directly to your location.
             </p>
           </motion.div>
         </div>
       </section>
 
-      {/* Quick Nav */}
       <section className="py-6 border-y border-border bg-navy-light sticky top-16 z-30">
         <div className="section-container">
           <div className="flex flex-wrap justify-center gap-4">
@@ -250,15 +225,13 @@ export default function Services() {
                 className="flex items-center gap-2 px-4 py-2 rounded-lg bg-secondary hover:bg-primary/10 hover:text-primary transition-all text-sm font-medium text-foreground"
               >
                 <cat.icon className="w-4 h-4" />
-                {cat.title.split(' ')[0]}{' '}
-                {cat.title.includes('&') ? '& ' + cat.title.split('& ')[1].split(' ')[0] : ''}
+                {cat.title.split(' ')[0]} {cat.title.includes('&') ? '& ' + cat.title.split('& ')[1].split(' ')[0] : ''}
               </a>
             ))}
           </div>
         </div>
       </section>
 
-      {/* Service Categories */}
       <section className="py-24">
         <div className="section-container">
           <div className="space-y-32">
@@ -271,27 +244,17 @@ export default function Services() {
         </div>
       </section>
 
-      {/* Service Request Form */}
       <section className="py-24 bg-gradient-card border-y border-border" id="request-service">
         <div className="section-container">
-          <SectionHeader
-            badge="Request Service"
-            title="Get Started Today"
-            subtitle="Fill out the form below and we'll contact you promptly."
-          />
+          <SectionHeader badge="Request Service" title="Get Started Today" subtitle="Fill out the form below and we'll contact you promptly." />
 
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            className="max-w-2xl mx-auto"
-          >
+          <motion.div initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} className="max-w-2xl mx-auto">
             <div className="card-elevated p-8">
               <form
                 name="service-request"
                 method="POST"
                 data-netlify="true"
-                netlify-honeypot="bot-field"
+                data-netlify-honeypot="bot-field"
                 onSubmit={handleSubmit}
                 className="space-y-6"
               >
@@ -339,12 +302,6 @@ export default function Services() {
                   <Textarea id="notes" name="notes" rows={4} placeholder="Describe your issue or request in detail..." />
                 </div>
 
-                <div className="bg-secondary/50 rounded-lg p-4">
-                  <p className="text-sm text-muted-foreground">
-                    <strong className="text-foreground">Typical response time:</strong> We respond to service requests within 30 minutes during business hours (7 AM - 9 PM).
-                  </p>
-                </div>
-
                 <Button type="submit" variant="hero" size="lg" className="w-full" disabled={isSubmitting}>
                   {isSubmitting ? 'Submitting...' : 'Submit Service Request'}
                 </Button>
@@ -354,17 +311,10 @@ export default function Services() {
         </div>
       </section>
 
-      {/* CTA */}
       <section className="py-24">
         <div className="section-container text-center">
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-          >
-            <h2 className="text-3xl md:text-4xl font-bold text-foreground mb-4">
-              Need Service Now?
-            </h2>
+          <motion.div initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }}>
+            <h2 className="text-3xl md:text-4xl font-bold text-foreground mb-4">Need Service Now?</h2>
             <p className="text-muted-foreground mb-8">Call or text us directly for the fastest response.</p>
             <Button variant="hero" size="xl" asChild>
               <a href="tel:5712062249" className="flex items-center gap-2">
