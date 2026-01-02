@@ -5,13 +5,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Label } from '@/components/ui/label';
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '@/components/ui/select';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { SectionHeader } from '@/components/ui/section-header';
 import { Layout } from '@/components/layout/Layout';
 import { useCart, Product } from '@/contexts/CartContext';
@@ -82,9 +76,7 @@ const ProductCard = ({ product }: ProductCardProps) => {
         />
       </div>
       <div className="p-6">
-        <h3 className="text-lg font-semibold text-foreground mb-2 line-clamp-2">
-          {product.name}
-        </h3>
+        <h3 className="text-lg font-semibold text-foreground mb-2 line-clamp-2">{product.name}</h3>
         <p className="text-sm text-muted-foreground mb-3">Part #: {product.partNumber}</p>
         <p className="text-2xl font-bold text-primary mb-4">${product.price.toFixed(2)}</p>
 
@@ -117,11 +109,18 @@ const ProductCard = ({ product }: ProductCardProps) => {
   );
 };
 
+function encodeForm(formData: FormData) {
+  const params = new URLSearchParams();
+  for (const [key, value] of formData.entries()) {
+    if (typeof value === 'string') params.append(key, value);
+  }
+  return params.toString();
+}
+
 export default function Parts() {
   const { toast } = useToast();
   const [isSubmitting, setIsSubmitting] = useState(false);
 
-  // IMPORTANT: Shadcn Select doesn't submit a real <select>, so we store values and submit via hidden inputs.
   const [urgency, setUrgency] = useState('');
   const [delivery, setDelivery] = useState('');
 
@@ -135,27 +134,29 @@ export default function Parts() {
     const form = e.currentTarget;
     const formData = new FormData(form);
 
-    // Include select values explicitly (belt & suspenders)
+    // Extra-safe: ensure form-name exists in the payload
+    formData.set('form-name', 'parts-request');
+
+    // Ensure shadcn values are in payload
     formData.set('urgency', urgency);
     formData.set('delivery', delivery);
 
-    // If a file is attached, send multipart. Otherwise send urlencoded.
-    const file = formData.get('photo');
-    const hasFile = file instanceof File && file.size > 0;
+    const photo = formData.get('photo');
+    const hasFile = photo instanceof File && photo.size > 0;
 
     try {
       if (hasFile) {
-        await fetch('/', { method: 'POST', body: formData });
+        // multipart (file upload)
+        const res = await fetch('/', { method: 'POST', body: formData });
+        if (!res.ok) throw new Error(`HTTP ${res.status}`);
       } else {
-        const params = new URLSearchParams();
-        for (const [key, value] of formData.entries()) {
-          if (typeof value === 'string') params.append(key, value);
-        }
-        await fetch('/', {
+        // urlencoded (no file)
+        const res = await fetch('/', {
           method: 'POST',
           headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-          body: params.toString(),
+          body: encodeForm(formData),
         });
+        if (!res.ok) throw new Error(`HTTP ${res.status}`);
       }
 
       toast({
@@ -179,7 +180,6 @@ export default function Parts() {
 
   return (
     <Layout>
-      {/* Hero */}
       <section className="pt-32 pb-16 bg-hero-pattern">
         <div className="section-container">
           <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="max-w-3xl">
@@ -190,13 +190,12 @@ export default function Parts() {
               Quality Parts, <span className="text-gradient-orange">Fast Delivery</span>
             </h1>
             <p className="text-lg text-muted-foreground">
-              Shop our in-stock parts or request any part with VIN-based accuracy. We source OEM and aftermarket parts for all major truck brands.
+              Shop our in-stock parts or request any part with VIN-based accuracy.
             </p>
           </motion.div>
         </div>
       </section>
 
-      {/* In-Stock Parts */}
       <section className="py-24">
         <div className="section-container">
           <SectionHeader badge="In-Stock" title="Buy Online Now" subtitle="These parts are in stock and ready to ship." />
@@ -208,7 +207,6 @@ export default function Parts() {
         </div>
       </section>
 
-      {/* Request Any Part */}
       <section className="py-24 bg-gradient-card border-y border-border" id="request-part">
         <div className="section-container">
           <SectionHeader badge="Custom Request" title="Request Any Part" subtitle="Can't find what you need? We can source it for you." />
@@ -219,7 +217,7 @@ export default function Parts() {
                 name="parts-request"
                 method="POST"
                 data-netlify="true"
-                netlify-honeypot="bot-field"
+                data-netlify-honeypot="bot-field"
                 encType="multipart/form-data"
                 onSubmit={handlePartRequest}
                 className="space-y-6"
@@ -231,7 +229,6 @@ export default function Parts() {
                   </label>
                 </p>
 
-                {/* Hidden inputs for shadcn selects */}
                 <input type="hidden" name="urgency" value={urgency} />
                 <input type="hidden" name="delivery" value={delivery} />
 
@@ -330,7 +327,7 @@ export default function Parts() {
 
                     <div className="space-y-2">
                       <Label htmlFor="notes">Additional Notes</Label>
-                      <Textarea id="notes" name="notes" rows={3} placeholder="Any additional details about the part or your needs..." />
+                      <Textarea id="notes" name="notes" rows={3} placeholder="Any additional details..." />
                     </div>
 
                     <div className="space-y-2">
@@ -351,6 +348,9 @@ export default function Parts() {
 
                       <div
                         onClick={() => fileInputRef.current?.click()}
+                        onKeyDown={(e) => {
+                          if (e.key === 'Enter' || e.key === ' ') fileInputRef.current?.click();
+                        }}
                         className="border-2 border-dashed border-border rounded-lg p-6 text-center hover:border-primary/50 transition-colors cursor-pointer"
                         role="button"
                         tabIndex={0}
