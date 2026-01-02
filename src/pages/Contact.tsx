@@ -48,12 +48,17 @@ export default function Contact() {
     const form = e.currentTarget;
     const formData = new FormData(form);
 
+    // Extra-safe: ensure form-name exists in the payload
+    formData.set('form-name', 'contact');
+
     try {
-      await fetch('/', {
+      const res = await fetch('/', {
         method: 'POST',
         headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
         body: encodeForm(formData),
       });
+
+      if (!res.ok) throw new Error(`HTTP ${res.status}`);
 
       toast({
         title: 'Message Sent',
@@ -126,7 +131,9 @@ export default function Contact() {
                       </div>
                       <div>
                         <p className="text-sm text-muted-foreground">{item.label}</p>
-                        <p className="font-medium text-foreground group-hover:text-primary transition-colors">{item.value}</p>
+                        <p className="font-medium text-foreground group-hover:text-primary transition-colors">
+                          {item.value}
+                        </p>
                       </div>
                     </a>
                   ))}
@@ -172,7 +179,7 @@ export default function Contact() {
                   name="contact"
                   method="POST"
                   data-netlify="true"
-                  netlify-honeypot="bot-field"
+                  data-netlify-honeypot="bot-field"
                   onSubmit={handleSubmit}
                   className="space-y-6"
                 >
